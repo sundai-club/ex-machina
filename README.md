@@ -14,3 +14,10 @@ ollama pull llama3.2:3b
 python tic_tac_toe_game.py
 python split_or_steal_game.py
 ```
+
+3. For GUI:
+ 
+```
+brew install python-tk@3.11
+python tic_tac_toe_gui.py
+```
