@@ -11,5 +11,6 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ollama pull llama3.2:1b
 ollama pull llama3.2:3b
-python play.py
+python tic_tac_toe_game.py
+python split_or_steal_game.py
 ```

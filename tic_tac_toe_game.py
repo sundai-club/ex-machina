@@ -81,11 +81,12 @@ def main():
     model2 = "llama3.2:3b"  # Second player (O)
     scores = {"X": 0, "O": 0, "Draw": 0}
     
-    print(f"Starting 100 Tic Tac Toe games between {model1} (X) and {model2} (O)")
+    rounds = 10    # Number of games
+    print(f"Starting {rounds} Tic Tac Toe games between {model1} (X) and {model2} (O)")
     
-    for game_num in range(100):
+    for game_num in range(rounds):
         game = TicTacToe()
-        print(f"\nGame {game_num + 1}/100")
+        print(f"\nGame {game_num + 1}/{rounds}")
         
         while True:
             print("\nCurrent board:")
@@ -113,7 +114,7 @@ def main():
                 print(f"\nCurrent scores - {model1} (X): {scores['X']}, {model2} (O): {scores['O']}, Draws: {scores['Draw']}")
                 break
     
-    print("\nFinal scores after 100 games:")
+    print(f"\nFinal scores after {rounds} games:")
     print(f"{model1} (X): {scores['X']} wins")
     print(f"{model2} (O): {scores['O']} wins")
     print(f"Draws: {scores['Draw']}")
