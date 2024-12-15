@@ -52,8 +52,16 @@ def ask_ollama(model_name, prompt):
         "stream": False
     }
     
-    response = requests.post(url, json=data)
-    return response.json()["response"]
+    try:
+        response = requests.post(url, json=data, timeout=30)  # 30 second timeout
+        response.raise_for_status()  # Raise an exception for bad status codes
+        return response.json()["response"]
+    except requests.Timeout:
+        print(f"Request to Ollama timed out after 30 seconds")
+        return "timeout"
+    except requests.RequestException as e:
+        print(f"Error communicating with Ollama: {str(e)}")
+        return "error"
 
 def get_move_from_model(model_name, game, player_symbol):
     board_state = game.get_board_state()
@@ -70,6 +78,8 @@ Respond with ONLY the number, nothing else."""
     while True:
         try:
             response = ask_ollama(model_name, prompt)
+            if response in ["timeout", "error"]:
+                continue
             move = int(response.strip())
             if move in valid_moves:
                 return move

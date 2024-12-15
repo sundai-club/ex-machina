@@ -6,10 +6,13 @@ from tic_tac_toe_game import TicTacToe, ask_ollama, get_move_from_model
 
 def get_ollama_models():
     try:
-        response = requests.get('http://localhost:11434/api/tags')
+        response = requests.get('http://localhost:11434/api/tags', timeout=5)  # 5 second timeout
         if response.status_code == 200:
             models = [model['name'] for model in response.json()['models']]
             return sorted(models) if models else ["llama2:7b"]  # fallback to default if no models
+    except requests.Timeout:
+        print("Ollama server check timed out")
+        return ["ollama not responding"]
     except:
         return ["ollama is not running"]  # fallback to default if server not running
 
