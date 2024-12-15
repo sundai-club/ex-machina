@@ -39,7 +39,7 @@ class TicTacToe:
     
     def get_board_state(self):
         rows = [self.board[i:i+3] for i in range(0, 9, 3)]
-        return "\n---------\n".join(["|".join(row) for row in rows])
+        return "\n-----\n".join(["|".join(row) for row in rows])
     
     def get_valid_moves(self):
         return [i for i, spot in enumerate(self.board) if spot == " "]

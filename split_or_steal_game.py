@@ -34,8 +34,8 @@ def format_game_history(history):
     formatted = "Previous rounds:\n"
     for round_num, round_data in enumerate(history, 1):
         formatted += f"Round {round_num}:\n"
-        formatted += f"{MODEL_1_NAME}: {round_data['llama_3b']}\n"
-        formatted += f"{MODEL_2_NAME}: {round_data['llama_1b']}\n"
+        formatted += f"{MODEL_1_NAME}: {round_data[MODEL_1_NAME]}\n"
+        formatted += f"{MODEL_2_NAME}: {round_data[MODEL_2_NAME]}\n"
         formatted += f"Result: {round_data['result']}\n"
     return formatted
 
@@ -96,8 +96,8 @@ def play_game(rounds: int = 10):
         # Record round results
         round_result = f"{MODEL_1_NAME} got {points_1} points, {MODEL_2_NAME} got {points_2} points"
         history.append({
-            'llama_3b': model_1_decision,
-            'llama_1b': model_2_decision,
+            MODEL_1_NAME: model_1_decision,
+            MODEL_2_NAME: model_2_decision,
             'result': round_result
         })
         
