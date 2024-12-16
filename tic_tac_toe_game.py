@@ -2,7 +2,7 @@ import requests
 import json
 import time
 
-class TicTacToe:
+class SplitOrSteal:
     def __init__(self):
         self.board = [" " for _ in range(9)]
         self.current_player = "X"
@@ -39,7 +39,7 @@ class TicTacToe:
     
     def get_board_state(self):
         rows = [self.board[i:i+3] for i in range(0, 9, 3)]
-        return "\n-----\n".join(["|".join(row) for row in rows])
+        return "\n---------\n".join(["|".join(row) for row in rows])
     
     def get_valid_moves(self):
         return [i for i, spot in enumerate(self.board) if spot == " "]
@@ -63,23 +63,26 @@ def ask_ollama(model_name, prompt):
         print(f"Error communicating with Ollama: {str(e)}")
         return "error"
 
-def get_move_from_model(model_name, game, player_symbol):
-    board_state = game.get_board_state()
-    valid_moves = game.get_valid_moves()
+def get_move_from_model(model_name, game):
+    # Convert history to text format
+    history_text = ""
+    for round in game.history:
+        history_text += f"Round {round['round']}: User chose {round['user_choice']}, AI chose {round['llm_choice']}\n"
     
-    prompt = f"""You are playing Tic Tac Toe as player {player_symbol}. Here's the current board state:
+    prompt = f"""You are playing Split or Steal game. Here's the game history:
 
-{board_state}
+{history_text}
 
-Valid moves are the following positions (0-8): {valid_moves}
-Choose one position number from the valid moves.
-Respond with ONLY the number, nothing else."""
+Based on this history, choose either "Split" or "Steal" for the next move.
+Also provide a brief explanation for your choice and a prediction about the user's next move.
+Format your response exactly like this:
+Choice: Split
+Explanation: I choose split because of the pattern of cooperation.
+Prediction: The user will likely split next round."""
     
     while True:
         try:
             response = ask_ollama(model_name, prompt)
-            if response in ["timeout", "error"]:
-                continue
             move = int(response.strip())
             if move in valid_moves:
                 return move
@@ -87,44 +90,22 @@ Respond with ONLY the number, nothing else."""
             continue
 
 def main():
-    model1 = "llama3.2:1b"  # First player (X)
-    model2 = "llama3.2:3b"  # Second player (O)
-    scores = {"X": 0, "O": 0, "Draw": 0}
+    model_name = "llama2"  # or whatever model you're using
+    game = SplitOrSteal()
     
-    rounds = 10    # Number of games
-    print(f"Starting {rounds} Tic Tac Toe games between {model1} (X) and {model2} (O)")
+    print(f"Starting 100 Tic Tac Toe games between {model1} (X) and {model2} (O)")
     
-    for game_num in range(rounds):
+    for game_num in range(100):
         game = TicTacToe()
-        print(f"\nGame {game_num + 1}/{rounds}")
+        print(f"\nGame {game_num + 1}/100")
         
+        # Get user input
         while True:
-            print("\nCurrent board:")
-            print(game.get_board_state())
-            
-            current_model = model1 if game.current_player == "X" else model2
-            print(f"\n{current_model}'s turn ({game.current_player})")
-            
-            move = get_move_from_model(current_model, game, game.current_player)
-            game.make_move(move)
-            
-            winner = game.check_winner()
-            if winner:
-                print("\nFinal board:")
-                print(game.get_board_state())
-                
-                if winner == "Draw":
-                    print("\nGame ended in a draw!")
-                    scores["Draw"] += 1
-                else:
-                    model_name = model1 if winner == "X" else model2
-                    print(f"\n{model_name} ({winner}) wins!")
-                    scores[winner] += 1
-                    
-                print(f"\nCurrent scores - {model1} (X): {scores['X']}, {model2} (O): {scores['O']}, Draws: {scores['Draw']}")
+            user_choice = input("\nEnter your choice (Split/Steal): ").capitalize()
+            if user_choice in ['Split', 'Steal']:
                 break
     
-    print(f"\nFinal scores after {rounds} games:")
+    print("\nFinal scores after 100 games:")
     print(f"{model1} (X): {scores['X']} wins")
     print(f"{model2} (O): {scores['O']} wins")
     print(f"Draws: {scores['Draw']}")
